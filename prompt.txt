@@ -1,0 +1,31 @@
+# Recorded prompts
+
+## 2025-02-07 — Task and project management app
+
+**Original request (restructured for clarity and efficiency):**
+
+Build a professional task and project management web app with:
+
+**Features**
+- Dashboard: overview of all projects and tasks with key statistics
+- Projects: create and manage projects with progress tracking
+- Tasks: create, assign, and track tasks within projects
+- Kanban: visual drag-and-drop task management by status
+- Calendar: view tasks by due date
+
+**Design**
+- Clean, minimal aesthetic with ample white space
+- Primary color: deep indigo (#4F46E5); soft grays; subtle status accents
+- Typography: Inter; smooth transitions; card-based layouts
+- Responsive, mobile-first
+
+**Components to implement**
+- Dashboard stats cards
+- Project cards
+- Task list items
+- Kanban columns
+- Sidebar navigation layout
+
+**Tech**
+- React functional components only
+- TypeScript only

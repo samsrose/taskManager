@@ -1,0 +1,44 @@
+# Change log
+
+## 2025-02-07 — Task and project management app
+
+### Dependencies
+- Added react-router-dom for routing.
+
+### New files
+- src/types/index.ts — Types for Task (status, priority, projectId, dueDate) and Project (color, progress, taskIds).
+- src/context/AppContext.tsx — Global state: projects, tasks; CRUD for both; getTasksByProject, getTasksByStatus, getProjectProgress. Seed data for demo.
+- src/index.css — Design system: CSS variables (primary indigo, grays, status/priority colors), Inter font, layout (sidebar width, radii, shadows), card/btn/form/badge classes.
+- src/components/Sidebar.tsx — Nav links (Dashboard, Projects, Tasks, Kanban, Calendar); active state; mobile overlay support.
+- src/components/Layout.tsx — Sidebar + main area; header with mobile menu toggle; Outlet for route content.
+- src/components/StatsCard.tsx — Reusable stat card with title, value, optional subtitle, icon, accent (primary/gray/green/blue/amber).
+- src/components/ProjectCard.tsx — Project card with color bar, name, description, progress bar (derived), task count; links to project detail.
+- src/components/TaskListItem.tsx — Task row: title, description, status badge, priority, project name, due date; optional actions slot.
+- src/components/KanbanColumn.tsx — Column for one status; header with count; draggable task items; drag data set for task id.
+- src/pages/Dashboard.tsx — Stats (projects, total tasks, in progress, completed, overdue); project grid (first 6) with “View all” link.
+- src/pages/Projects.tsx — List of project cards; “New project” form (name, description, color picker); create project.
+- src/pages/ProjectDetail.tsx — Project header with progress; list of tasks for that project; back link to Projects.
+- src/pages/Tasks.tsx — Task list with status filter (all/todo/in_progress/review/done); “New task” form (title, description, project, status, priority); delete action per task.
+- src/pages/Kanban.tsx — Four columns (todo, in_progress, review, done); drag-and-drop to update task status via dataTransfer.
+- src/pages/Calendar.tsx — Month view; prev/next; tasks with dueDate shown on day cells; today highlighted; links to task list.
+
+### Modified files
+- index.html — Title “Taskflow — Task & Project Management”; added Inter font (Google Fonts).
+- src/App.tsx — Replaced default Vite UI with BrowserRouter, AppProvider, Layout, and Routes for /, /projects, /projects/:id, /tasks, /kanban, /calendar.
+- src/main.tsx — Unchanged (still imports index.css and App).
+
+### Removed / unused
+- src/App.css — No longer imported (styles moved to index.css and component inline where needed).
+
+### Behavior
+- Progress is derived from tasks (done count / total) via getProjectProgress.
+- Kanban drops call updateTaskStatus with column status (drag data set in onDragStart).
+- Calendar shows only tasks that have dueDate set; seed data has one task with dueDate for demo.
+
+### localStorage persistence
+- AppContext: load projects and tasks from localStorage on init (key `taskflow-data`). Fallback to default seed data if missing or invalid.
+- useEffect saves `{ projects, tasks }` to localStorage whenever either changes.
+- Load/save wrapped in try/catch for parse and quota errors.
+
+### Follow-up fixes (same session)
+- Removed unused variables for strict TS: Calendar (pad callback arg, projectNames), Dashboard (getProjectProgress, todo), Kanban (draggedId state and handleDragStart). KanbanColumn no longer takes onDragStart prop.
