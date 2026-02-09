@@ -40,5 +40,23 @@
 - useEffect saves `{ projects, tasks }` to localStorage whenever either changes.
 - Load/save wrapped in try/catch for parse and quota errors.
 
+### Mobile accessibility and compatibility
+- **index.html**: viewport-fit=cover, theme-color (#4F46E5), mobile-web-app-capable for standalone/PWA-style use.
+- **index.css**: prefers-reduced-motion (disable animations/transitions); body overflow-x hidden, safe-area-inset for notched devices; -webkit-tap-highlight-color transparent; focus-visible outline for keyboard; touch targets (pointer: coarse) min 44x44 for .btn/.btn-sm; form inputs 16px on mobile to avoid iOS zoom; .sr-only for screen-reader-only text; .kanban-scroll with -webkit-overflow-scrolling: touch; calendar responsive (smaller rows/cells and weekday font on &lt;640px).
+- **Layout**: Header safe-area padding; menu button 44x44 on mobile, aria-label Open/Close menu, aria-expanded, aria-controls=app-sidebar-nav; overlay Enter/Space to close.
+- **Sidebar**: id=app-sidebar-nav, aria-label, role=navigation; nav aria-label Primary; nav links minHeight 44; decorative icons aria-hidden.
+- **Kanban**: Status dropdown on each card (Move to…) for touch and keyboard; KanbanColumn onStatusChange prop; task card role=article, aria-label; select with aria-label.
+- **Calendar**: Prev/next aria-label; month label role=status aria-live=polite; calendar-grid and calendar-day classes for responsive min heights.
+
+### Add task from project page
+- **ProjectDetail**: “+ Add task” button next to “Tasks (n)” toggles an inline form. Form includes Compose with AI (same as Tasks), then title, description, status, priority; project is fixed to the current project. Empty state copy updated to “Click ‘Add task’ above to create one.”
+
+### ChatGPT integration (task composition)
+- **src/lib/openai.ts**: getApiKey/setApiKey (localStorage key `taskflow-openai-api-key`); suggestTask(prompt) calls OpenAI Chat Completions (gpt-4o-mini), returns `{ title, description }`; errors surfaced to caller.
+- **src/pages/Settings.tsx**: New Settings page; form to set/clear OpenAI API key (password input, save/clear); note that key is stored only in browser and used only for “Suggest task”.
+- **Sidebar**: Added Settings nav item (⚙).
+- **App.tsx**: Route /settings → Settings.
+- **Tasks.tsx**: “Compose with AI” block above task form: if no API key, link to Settings; else prompt input + “Suggest task” button; on success fill title and description; loading and error state (role="alert").
+
 ### Follow-up fixes (same session)
 - Removed unused variables for strict TS: Calendar (pad callback arg, projectNames), Dashboard (getProjectProgress, todo), Kanban (draggedId state and handleDragStart). KanbanColumn no longer takes onDragStart prop.

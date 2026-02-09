@@ -7,6 +7,7 @@ import { ProjectDetail } from './pages/ProjectDetail';
 import { Tasks } from './pages/Tasks';
 import { Kanban } from './pages/Kanban';
 import { Calendar } from './pages/Calendar';
+import { Settings } from './pages/Settings';
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
             <Route path="tasks" element={<Tasks />} />
             <Route path="kanban" element={<Kanban />} />
             <Route path="calendar" element={<Calendar />} />
+            <Route path="settings" element={<Settings />} />
           </Route>
         </Routes>
       </AppProvider>

@@ -49,13 +49,13 @@ export function Calendar() {
           <p className="page-subtitle">Tasks by due date</p>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <button type="button" className="btn btn-secondary btn-sm" onClick={prev}>
+          <button type="button" className="btn btn-secondary btn-sm" onClick={prev} aria-label="Previous month">
             ←
           </button>
-          <span style={{ minWidth: 180, textAlign: 'center', fontWeight: 600 }}>
+          <span style={{ minWidth: 180, textAlign: 'center', fontWeight: 600 }} role="status" aria-live="polite">
             {monthLabel}
           </span>
-          <button type="button" className="btn btn-secondary btn-sm" onClick={next}>
+          <button type="button" className="btn btn-secondary btn-sm" onClick={next} aria-label="Next month">
             →
           </button>
         </div>
@@ -63,6 +63,7 @@ export function Calendar() {
 
       <div className="card" style={{ overflow: 'hidden' }}>
         <div
+          className="calendar-weekday"
           style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(7, 1fr)',
@@ -85,6 +86,7 @@ export function Calendar() {
           ))}
         </div>
         <div
+          className="calendar-grid"
           style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(7, 1fr)',
@@ -104,6 +106,7 @@ export function Calendar() {
             return (
               <div
                 key={i}
+                className="calendar-day"
                 style={{
                   border: '1px solid var(--color-gray-100)',
                   padding: '0.5rem',

@@ -52,6 +52,14 @@ html {
   -moz-osx-font-smoothing: grayscale;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
 body {
   margin: 0;
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
@@ -59,6 +67,9 @@ body {
   color: var(--color-gray-900);
   background-color: var(--color-gray-50);
   min-height: 100vh;
+  min-height: calc(100vh - env(safe-area-inset-bottom));
+  overflow-x: hidden;
+  -webkit-tap-highlight-color: transparent;
 }
 
 #root {
@@ -79,11 +90,40 @@ button {
   cursor: pointer;
   border: none;
   background: none;
+  touch-action: manipulation;
+}
+
+/* Minimum touch target 44x44px (WCAG 2.5.5) */
+@media (pointer: coarse) {
+  .btn {
+    min-height: 44px;
+    min-width: 44px;
+    padding: 0.75rem 1rem;
+  }
+  .btn-sm {
+    min-height: 44px;
+    min-width: 44px;
+    padding: 0.5rem 0.75rem;
+  }
+}
+
+button:focus-visible,
+a:focus-visible,
+[tabindex="0"]:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
 }
 
 input, textarea, select {
   font-family: inherit;
   font-size: 1rem;
+}
+
+/* Prevent zoom on focus on iOS (16px minimum) */
+@media (max-width: 768px) {
+  input.form-input, textarea.form-input, select.form-input {
+    font-size: 16px;
+  }
 }
 
 .app-layout {
@@ -122,6 +162,7 @@ input, textarea, select {
     z-index: 100;
     transform: translateX(-100%);
     box-shadow: none;
+    padding-left: env(safe-area-inset-left);
   }
   .app-sidebar.open {
     transform: translateX(0);
@@ -129,6 +170,32 @@ input, textarea, select {
   }
   .app-content {
     padding: 1rem;
+    padding-left: max(1rem, env(safe-area-inset-left));
+    padding-right: max(1rem, env(safe-area-inset-right));
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+}
+
+/* Smooth horizontal scroll on iOS */
+.kanban-scroll {
+  -webkit-overflow-scrolling: touch;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+/* Calendar: smaller cells on narrow screens */
+@media (max-width: 640px) {
+  .calendar-grid {
+    grid-auto-rows: minmax(72px, 1fr);
+  }
+  .calendar-day {
+    min-height: 72px;
+    padding: 0.35rem;
+    font-size: 0.8125rem;
+  }
+  .calendar-weekday > div {
+    padding: 0.5rem;
+    font-size: 0.6875rem;
   }
 }
 
@@ -260,3 +327,16 @@ textarea.form-input {
 .badge-low { color: var(--color-priority-low); }
 .badge-medium { color: var(--color-priority-medium); }
 .badge-high { color: var(--color-priority-high); }
+
+/* Screen reader only - keep visible for focus, hide visually when not focused */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

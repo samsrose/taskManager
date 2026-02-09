@@ -8,11 +8,14 @@ const statusConfig: Record<TaskStatus, { label: string; accent: string }> = {
   done: { label: 'Done', accent: '#059669' },
 };
 
+const STATUS_OPTIONS: TaskStatus[] = ['todo', 'in_progress', 'review', 'done'];
+
 interface KanbanColumnProps {
   status: TaskStatus;
   tasks: Task[];
   onDragOver: (e: React.DragEvent) => void;
   onDrop: (e: React.DragEvent) => void;
+  onStatusChange?: (taskId: string, status: TaskStatus) => void;
   projectNames: Record<string, string>;
 }
 
@@ -21,6 +24,7 @@ export function KanbanColumn({
   tasks,
   onDragOver,
   onDrop,
+  onStatusChange,
   projectNames,
 }: KanbanColumnProps) {
   const config = statusConfig[status];
@@ -82,11 +86,33 @@ export function KanbanColumn({
               e.dataTransfer.effectAllowed = 'move';
             }}
             style={{ marginBottom: '0.75rem', cursor: 'grab' }}
+            role="article"
+            aria-label={`Task: ${task.title}`}
           >
             <TaskListItem
               task={task}
               projectName={projectNames[task.projectId]}
               showProject={true}
+              actions={
+                onStatusChange ? (
+                  <label style={{ flexShrink: 0, fontSize: '0.8125rem' }}>
+                    <span className="sr-only">Move to status</span>
+                    <select
+                      className="form-input"
+                      value={task.status}
+                      onChange={(e) => onStatusChange(task.id, e.target.value as TaskStatus)}
+                      style={{ minHeight: 36, padding: '0.375rem 0.5rem', cursor: 'pointer' }}
+                      aria-label={`Move ${task.title} to another column`}
+                    >
+                      {STATUS_OPTIONS.map((s) => (
+                        <option key={s} value={s}>
+                          {statusConfig[s].label}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                ) : undefined
+              }
             />
           </div>
         ))}

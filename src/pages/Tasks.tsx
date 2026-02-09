@@ -1,6 +1,8 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { TaskListItem } from '../components/TaskListItem';
+import { getApiKey, suggestTask } from '../lib/openai';
 import type { Task, TaskStatus } from '../types';
 
 const statuses: TaskStatus[] = ['todo', 'in_progress', 'review', 'done'];
@@ -14,6 +16,9 @@ export function Tasks() {
   const [description, setDescription] = useState('');
   const [status, setStatus] = useState<TaskStatus>('todo');
   const [priority, setPriority] = useState<Task['priority']>('medium');
+  const [aiPrompt, setAiPrompt] = useState('');
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiError, setAiError] = useState<string | null>(null);
 
   const projectNames: Record<string, string> = Object.fromEntries(
     projects.map((p) => [p.id, p.name])
@@ -41,6 +46,23 @@ export function Tasks() {
     setShowForm(false);
   };
 
+  const handleSuggestTask = async () => {
+    setAiError(null);
+    setAiLoading(true);
+    try {
+      const result = await suggestTask(aiPrompt);
+      setTitle(result.title);
+      setDescription(result.description);
+      setAiPrompt('');
+    } catch (err) {
+      setAiError(err instanceof Error ? err.message : 'Failed to get suggestion');
+    } finally {
+      setAiLoading(false);
+    }
+  };
+
+  const hasApiKey = !!getApiKey();
+
   return (
     <>
       <header className="page-header" style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: '1rem' }}>
@@ -58,7 +80,43 @@ export function Tasks() {
       </header>
 
       {showForm && (
-        <div className="card" style={{ padding: '1.5rem', marginBottom: '2rem',  }}>
+        <div className="card" style={{ padding: '1.5rem', marginBottom: '2rem' }}>
+          <div style={{ marginBottom: '1.5rem', paddingBottom: '1.5rem', borderBottom: '1px solid var(--color-gray-200)' }}>
+            <h3 style={{ margin: '0 0 0.5rem', fontSize: '0.9375rem', fontWeight: 600 }}>Compose with AI</h3>
+            {!hasApiKey ? (
+              <p style={{ margin: 0, fontSize: '0.875rem', color: 'var(--color-gray-500)' }}>
+                <Link to="/settings">Add your OpenAI API key in Settings</Link> to get task title and description suggestions.
+              </p>
+            ) : (
+              <>
+                <input
+                  type="text"
+                  className="form-input"
+                  value={aiPrompt}
+                  onChange={(e) => { setAiPrompt(e.target.value); setAiError(null); }}
+                  placeholder="e.g. Review homepage copy and suggest improvements"
+                  disabled={aiLoading}
+                  aria-label="Prompt for AI task suggestion"
+                  style={{ marginBottom: '0.5rem' }}
+                />
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+                  <button
+                    type="button"
+                    className="btn btn-secondary btn-sm"
+                    onClick={handleSuggestTask}
+                    disabled={aiLoading || !aiPrompt.trim()}
+                  >
+                    {aiLoading ? 'Suggesting…' : 'Suggest task'}
+                  </button>
+                  {aiError && (
+                    <span style={{ fontSize: '0.8125rem', color: 'var(--color-priority-high)' }} role="alert">
+                      {aiError}
+                    </span>
+                  )}
+                </div>
+              </>
+            )}
+          </div>
           <form onSubmit={handleSubmit}>
             <div className="form-group">
               <label className="form-label">Title</label>

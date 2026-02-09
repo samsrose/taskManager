@@ -7,6 +7,7 @@ const navItems = [
   { to: '/tasks', label: 'Tasks', icon: '✓' },
   { to: '/kanban', label: 'Kanban', icon: '▦' },
   { to: '/calendar', label: 'Calendar', icon: '📅' },
+  { to: '/settings', label: 'Settings', icon: '⚙' },
 ];
 
 interface SidebarProps {
@@ -19,15 +20,20 @@ export function Sidebar({ open = false, onClose, mobileOverlay }: SidebarProps) 
   return (
     <>
       {open && mobileOverlay}
-      <aside className={`app-sidebar ${open ? 'open' : ''}`}>
+      <aside
+        id="app-sidebar-nav"
+        className={`app-sidebar ${open ? 'open' : ''}`}
+        aria-label="Main navigation"
+        role="navigation"
+      >
         <div style={{ padding: '1.5rem', borderBottom: '1px solid var(--color-gray-200)' }}>
-          <NavLink to="/" style={{ textDecoration: 'none', color: 'inherit' }}>
+          <NavLink to="/" style={{ textDecoration: 'none', color: 'inherit' }} onClick={onClose}>
             <span style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--color-primary)' }}>
               Taskflow
             </span>
           </NavLink>
         </div>
-        <nav style={{ flex: 1, padding: '1rem 0' }}>
+        <nav style={{ flex: 1, padding: '1rem 0' }} aria-label="Primary">
           {navItems.map(({ to, label, icon }) => (
             <NavLink
               key={to}
@@ -38,7 +44,8 @@ export function Sidebar({ open = false, onClose, mobileOverlay }: SidebarProps) 
                 display: 'flex',
                 alignItems: 'center',
                 gap: '0.75rem',
-                padding: '0.625rem 1.5rem',
+                padding: '0.75rem 1.5rem',
+                minHeight: 44,
                 fontSize: '0.9375rem',
                 fontWeight: 500,
                 color: isActive ? 'var(--color-primary)' : 'var(--color-gray-600)',
@@ -48,7 +55,7 @@ export function Sidebar({ open = false, onClose, mobileOverlay }: SidebarProps) 
                 transition: 'background-color 0.2s ease, color 0.2s ease',
               })}
             >
-              <span style={{ fontSize: '1.1rem' }}>{icon}</span>
+              <span style={{ fontSize: '1.1rem' }} aria-hidden>{icon}</span>
               {label}
             </NavLink>
           ))}

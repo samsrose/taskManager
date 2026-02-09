@@ -34,6 +34,7 @@ export function Kanban() {
       </header>
 
       <div
+        className="kanban-scroll"
         style={{
           display: 'flex',
           gap: '1.25rem',
@@ -49,6 +50,7 @@ export function Kanban() {
             tasks={getTasksByStatus(status)}
             onDragOver={handleDragOver}
             onDrop={(e) => handleDrop(e, status)}
+            onStatusChange={updateTaskStatus}
             projectNames={projectNames}
           />
         ))}

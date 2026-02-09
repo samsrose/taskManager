@@ -29,3 +29,19 @@ Build a professional task and project management web app with:
 **Tech**
 - React functional components only
 - TypeScript only
+
+---
+
+## 2025-02-07 — Mobile accessibility and compatibility
+
+**Request (restructured):** Add mobile accessibility and compatibility.
+
+**Scope:** Touch targets (44px min), safe-area insets, viewport/meta for mobile, reduced motion, focus-visible and ARIA for keyboard/screen readers, Kanban status dropdown for touch/keyboard, responsive calendar and layout.
+
+---
+
+## 2025-02-07 — ChatGPT integration for task composition
+
+**Request (restructured):** Add ChatGPT integration so composition of new tasks is assisted by AI.
+
+**Scope:** User-supplied OpenAI API key (Settings page, localStorage); “Compose with AI” in the new-task form: short prompt → suggest task → fill title and description (OpenAI gpt-4o-mini, JSON response). No backend; key used only from client for Suggest task.
