@@ -4,18 +4,40 @@ import { useApp } from '../context/AppContext';
 
 interface ProjectCardProps {
   project: Project;
+  onDelete?: (project: Project) => void;
 }
 
-export function ProjectCard({ project }: ProjectCardProps) {
+export function ProjectCard({ project, onDelete }: ProjectCardProps) {
   const { getProjectProgress } = useApp();
   const progress = getProjectProgress(project.id);
 
   return (
-    <Link
-      to={`/projects/${project.id}`}
-      style={{ textDecoration: 'none', color: 'inherit' }}
-    >
-      <div className="card" style={{ padding: '1.25rem', height: '100%' }}>
+    <div className="card" style={{ padding: '1.25rem', height: '100%', position: 'relative' }}>
+      {onDelete && (
+        <button
+          type="button"
+          className="btn btn-ghost btn-sm"
+          style={{
+            position: 'absolute',
+            top: '0.75rem',
+            right: '0.75rem',
+            fontSize: '0.8125rem',
+            color: 'var(--color-gray-500)',
+          }}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            onDelete(project);
+          }}
+          aria-label={`Delete project ${project.name}`}
+        >
+          Delete
+        </button>
+      )}
+      <Link
+        to={`/projects/${project.id}`}
+        style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}
+      >
         <div
           style={{
             width: 40,
@@ -66,7 +88,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
         <p style={{ margin: '0.75rem 0 0', fontSize: '0.75rem', color: 'var(--color-gray-400)' }}>
           {project.taskIds.length} tasks
         </p>
-      </div>
-    </Link>
+      </Link>
+    </div>
   );
 }

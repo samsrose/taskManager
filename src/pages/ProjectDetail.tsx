@@ -1,13 +1,15 @@
 import { useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { TaskListItem } from '../components/TaskListItem';
+import { ConfirmDialog } from '../components/ConfirmDialog';
 import { getApiKey, suggestTask } from '../lib/openai';
 import type { TaskStatus } from '../types';
 
 export function ProjectDetail() {
   const { id } = useParams<{ id: string }>();
-  const { projects, getTasksByProject, getProjectProgress, addTask } = useApp();
+  const navigate = useNavigate();
+  const { projects, getTasksByProject, getProjectProgress, addTask, deleteProject } = useApp();
   const project = projects.find((p) => p.id === id);
   const tasks = project ? getTasksByProject(project.id) : [];
   const progress = project ? getProjectProgress(project.id) : 0;
@@ -20,8 +22,16 @@ export function ProjectDetail() {
   const [aiPrompt, setAiPrompt] = useState('');
   const [aiLoading, setAiLoading] = useState(false);
   const [aiError, setAiError] = useState<string | null>(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const hasApiKey = !!getApiKey();
+
+  const handleDeleteProject = () => {
+    if (!project) return;
+    deleteProject(project.id);
+    setShowDeleteConfirm(false);
+    navigate('/projects');
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -69,9 +79,20 @@ export function ProjectDetail() {
   return (
     <>
       <header className="page-header">
-        <Link to="/projects" style={{ fontSize: '0.875rem', marginBottom: '0.5rem', display: 'inline-block' }}>
-          ← Projects
-        </Link>
+        <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: '1rem' }}>
+          <Link to="/projects" style={{ fontSize: '0.875rem', marginBottom: '0.5rem', display: 'inline-block' }}>
+            ← Projects
+          </Link>
+          <button
+            type="button"
+            className="btn btn-ghost btn-sm"
+            style={{ color: 'var(--color-priority-high)' }}
+            onClick={() => setShowDeleteConfirm(true)}
+            aria-label="Delete project"
+          >
+            Delete project
+          </button>
+        </div>
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem', flexWrap: 'wrap' }}>
           <div
             style={{
@@ -246,6 +267,16 @@ export function ProjectDetail() {
           )}
         </div>
       </section>
+
+      <ConfirmDialog
+        open={showDeleteConfirm}
+        title="Delete project?"
+        message={`Delete "${project.name}" and all ${tasks.length} task${tasks.length === 1 ? '' : 's'}? This cannot be undone.`}
+        confirmLabel="Delete project"
+        danger
+        onConfirm={handleDeleteProject}
+        onCancel={() => setShowDeleteConfirm(false)}
+      />
     </>
   );
 }

@@ -1,12 +1,15 @@
 import { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { ProjectCard } from '../components/ProjectCard';
+import { ConfirmDialog } from '../components/ConfirmDialog';
+import type { Project } from '../types';
 
 const COLORS = ['#4F46E5', '#059669', '#D97706', '#DC2626', '#7C3AED', '#0EA5E9'];
 
 export function Projects() {
-  const { projects, addProject } = useApp();
+  const { projects, addProject, deleteProject } = useApp();
   const [showForm, setShowForm] = useState(false);
+  const [projectToDelete, setProjectToDelete] = useState<Project | null>(null);
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [color, setColor] = useState(COLORS[0]);
@@ -100,9 +103,28 @@ export function Projects() {
         }}
       >
         {projects.map((project) => (
-          <ProjectCard key={project.id} project={project} />
+          <ProjectCard
+            key={project.id}
+            project={project}
+            onDelete={(p) => setProjectToDelete(p)}
+          />
         ))}
       </div>
+
+      {projectToDelete && (
+        <ConfirmDialog
+          open={!!projectToDelete}
+          title="Delete project?"
+          message={`Delete "${projectToDelete.name}" and all ${projectToDelete.taskIds.length} task${projectToDelete.taskIds.length === 1 ? '' : 's'}? This cannot be undone.`}
+          confirmLabel="Delete project"
+          danger
+          onConfirm={() => {
+            deleteProject(projectToDelete.id);
+            setProjectToDelete(null);
+          }}
+          onCancel={() => setProjectToDelete(null)}
+        />
+      )}
     </>
   );
 }

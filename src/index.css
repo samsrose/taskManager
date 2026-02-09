@@ -242,6 +242,14 @@ input, textarea, select {
   background: var(--color-primary-hover);
 }
 
+.btn-danger {
+  background: #DC2626;
+  color: #fff;
+}
+.btn-danger:hover {
+  background: #B91C1C;
+}
+
 .btn-secondary {
   background: #fff;
   color: var(--color-gray-700);

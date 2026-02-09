@@ -48,6 +48,13 @@
 - **Kanban**: Status dropdown on each card (Move to…) for touch and keyboard; KanbanColumn onStatusChange prop; task card role=article, aria-label; select with aria-label.
 - **Calendar**: Prev/next aria-label; month label role=status aria-live=polite; calendar-grid and calendar-day classes for responsive min heights.
 
+### Delete project with confirmation
+- **ConfirmDialog** (src/components/ConfirmDialog.tsx): Reusable modal with title, message, Cancel and confirm button; danger style for destructive actions; Escape to cancel; aria dialog.
+- **index.css**: .btn-danger (red) for delete actions.
+- **ProjectDetail**: “Delete project” button in header; opens ConfirmDialog (“Delete [name] and all N tasks? This cannot be undone.”); on confirm calls deleteProject(id) and navigates to /projects.
+- **Projects list**: ProjectCard accepts optional onDelete(project); when provided, shows “Delete” button on card (stops propagation so link isn’t followed). Projects page holds projectToDelete state, renders ConfirmDialog when set; on confirm deletes project and clears state.
+- deleteProject in AppContext already removes the project and all tasks for that projectId.
+
 ### Add task from project page
 - **ProjectDetail**: “+ Add task” button next to “Tasks (n)” toggles an inline form. Form includes Compose with AI (same as Tasks), then title, description, status, priority; project is fixed to the current project. Empty state copy updated to “Click ‘Add task’ above to create one.”
 
